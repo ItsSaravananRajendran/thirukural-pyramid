@@ -1,26 +1,55 @@
 var camera, scene, controls, raycaster, mouse, geometry,renderer2D,renderer3D;
 var obj = [];
 var prevScene;
+var CANVAS_WIDTH = 1000, CANVAS_HEIGHT = 500;
 
-
+mouse = new THREE.Vector2();
 init();
 animate();
 
 
+
 function init(){
-	var canvas3D = document.getElementById('canvas3D');
+
+	info = document.createElement( 'div' );
+	info.style.position = 'absolute';
+	info.style.top = '30px';
+	info.style.width = '100%';
+	info.style.textAlign = 'center';
+	info.style.color = '#f00';
+	info.style.backgroundColor = 'transparent';
+	info.style.zIndex = '1';
+	info.style.fontFamily = 'Monospace';
+	info.style.userSelect = "none";
+	info.style.webkitUserSelect = "none";
+	info.style.MozUserSelect = "none";
+	document.body.appendChild( info );
+
+	container = document.getElementById( 'canvas' );
+	document.body.appendChild( container );
+
 	scene = new THREE.Scene();
 	camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
 	raycaster = new THREE.Raycaster();
 	renderer3D = new THREE.WebGLRenderer();
-	controls = new THREE.OrbitControls( camera, renderer3D.domElement );
-	mouse = new THREE.Vector2();
+	renderer3D.setSize( CANVAS_WIDTH, CANVAS_HEIGHT );
+	container.appendChild( renderer3D.domElement );
 
-	renderer3D.setSize( window.innerWidth, window.innerHeight );
+	controls = new THREE.OrbitControls( camera, renderer3D.domElement );
+	
+
 	renderer3D.setClearColor( 0xffffff, 1);
-	document.body.appendChild( renderer3D.domElement );
 	
 	geometry = new THREE.BoxBufferGeometry( 1, 1, 1 );
+	drawPyramid(0,0,0);
+	
+	camera.position.x =  29.171791366717322;
+	camera.position.y = 25.181160081788118;
+	camera.position.z = 31.857742628630625;
+}
+
+
+function drawPyramid(x, y, z){
 	var depth = 19;
 	for (var Z = -4; Z <= 5; Z++){
 		var material = new THREE.MeshLambertMaterial( { color: randomRGB(), emissive : randomRGB() } );
@@ -28,23 +57,20 @@ function init(){
 		for (var I = -h; I <= h ; I++) { 
 			for (var J= -h; J <= h; J++){
 				var cube = new THREE.Mesh(geometry, material);
+
 				cube.callback = objectClickHandler;
 				scene.add(cube);
 				obj.push(cube);
-				cube.position.z = 2*I;
-				cube.position.x = 2*J;
-				cube.position.y = 2*Z;
+				cube.position.z = 1*I + z;
+				cube.position.x = 1*J + x;
+				cube.position.y = 2*Z + y;
 				cube.levelNumber = depth;
 				cube.mat = material;
 			}
 		}	
 		depth = depth - 2;
 	}
-	
-	camera.position.z = 50
 }
-
-
 
 function rand(){
 	var min=0; 
@@ -121,17 +147,16 @@ function showThirukural(a,b){
 function onDocumentMouseDown(event) {
     event.preventDefault();
 
-    mouse.x = (event.clientX / renderer3D.domElement.clientWidth) * 2 - 1;
-    mouse.y =  - (event.clientY / renderer3D.domElement.clientHeight) * 2 + 1;
-
+	mouse.x = ( ( event.clientX - renderer3D.domElement.offsetLeft ) / renderer3D.domElement.clientWidth ) * 2 - 1;
+    mouse.y = - ( ( event.clientY - renderer3D.domElement.offsetTop ) / renderer3D.domElement.clientHeight ) * 2 + 1;
     raycaster.setFromCamera(mouse, camera);
 
      
     var intersects = raycaster.intersectObjects(obj);
 
-    if (intersects.length > 0) {
-        intersects[0].object.callback(intersects[0].object.levelNumber,intersects[0].object.mat);
-    }
 
+    if ( intersects.length > 0 ) {
+	    intersects[0].object.callback(intersects[0].object.levelNumber,intersects[0].object.mat); 
+   	} 
 }
 document.addEventListener('mousedown', onDocumentMouseDown, false);
