@@ -1,7 +1,7 @@
 var camera, scene, controls, raycaster, mouse, geometry,renderer2D,renderer3D;
 var obj = [];
 var prevScene;
-var CANVAS_WIDTH = 1000, CANVAS_HEIGHT = 500;
+var CANVAS_WIDTH = 500, CANVAS_HEIGHT = 500;
 
 mouse = new THREE.Vector2();
 init();
@@ -52,20 +52,27 @@ function init(){
 function drawPyramid(x, y, z){
 	var depth = 19;
 	for (var Z = -4; Z <= 5; Z++){
-		var material = new THREE.MeshLambertMaterial( { color: randomRGB(), emissive : randomRGB() } );
+		var material1 = new THREE.MeshLambertMaterial( { color: randomRGB(), emissive : randomRGB() } );
+		var material2 = new THREE.MeshLambertMaterial( { color: randomRGB(), emissive : randomRGB() } );
+		
 		h = parseInt(depth / 2);
 		for (var I = -h; I <= h ; I++) { 
 			for (var J= -h; J <= h; J++){
-				var cube = new THREE.Mesh(geometry, material);
-
+				if ((I+J) % 2 == 0){
+					var cube = new THREE.Mesh(geometry, material1);
+				}else{
+					var cube = new THREE.Mesh(geometry, material2);
+				}
+				
 				cube.callback = objectClickHandler;
 				scene.add(cube);
 				obj.push(cube);
 				cube.position.z = 1*I + z;
 				cube.position.x = 1*J + x;
-				cube.position.y = 2*Z + y;
+				cube.position.y = 1.5*Z + y;
 				cube.levelNumber = depth;
-				cube.mat = material;
+				cube.mat1 = material1;
+				cube.mat2 = material2;
 			}
 		}	
 		depth = depth - 2;
