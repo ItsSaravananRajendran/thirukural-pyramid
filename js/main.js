@@ -1,5 +1,5 @@
-var camera, scene, controls, raycaster, mouse, geometry,renderer2D,renderer3D;
-var obj = [];
+var camera1,camera2, scene1, scene2, controls, raycaster1,raycaster2, mouse, geometry,renderer3D,renderer3D2;
+var obj = [], obj2 = [];
 var prevScene;
 var CANVAS_WIDTH = 500, CANVAS_HEIGHT = 500;
 
@@ -25,31 +25,56 @@ function init(){
 	info.style.MozUserSelect = "none";
 	document.body.appendChild( info );
 
-	container = document.getElementById( 'canvas' );
-	document.body.appendChild( container );
+	container1 = document.getElementById('canvas1');
+	document.body.appendChild( container1 );
 
-	scene = new THREE.Scene();
-	camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
-	raycaster = new THREE.Raycaster();
+	container2 = document.getElementById('canvas2');
+	document.body.appendChild( container2 );
+
+	scene1 = new THREE.Scene();
+	scene2 = new THREE.Scene();
+
+	camera1 = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
+	raycaster1 = new THREE.Raycaster();
 	renderer3D = new THREE.WebGLRenderer();
 	renderer3D.setSize( CANVAS_WIDTH, CANVAS_HEIGHT );
-	container.appendChild( renderer3D.domElement );
+	container1.appendChild( renderer3D.domElement );
 
-	controls = new THREE.OrbitControls( camera, renderer3D.domElement );
-	
+	camera2 = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
+	raycaster2 = new THREE.Raycaster();
+	renderer3D2 = new THREE.WebGLRenderer();
+	renderer3D2.setSize( CANVAS_WIDTH, CANVAS_HEIGHT );
+	container2.appendChild( renderer3D2.domElement );
 
-	renderer3D.setClearColor( 0xffffff, 1);
+
+	controls = new THREE.OrbitControls( camera1, renderer3D.domElement );
+
+	scene1.add( new THREE.AmbientLight( 0x222222 ) );
+	scene2.add( new THREE.AmbientLight( 0x222222 ) );
+
+	var light = new THREE.PointLight( 0xffffff, 1 );
+	camera1.add( light );
+	camera2.add( light );
+		
+
+	renderer3D.setClearColor( 0x666666, 1);
+	renderer3D2.setClearColor( 0x666666, 1);
 	
 	geometry = new THREE.BoxBufferGeometry( 1, 1, 1 );
-	drawPyramid(0,0,0);
-	
-	camera.position.x =  29.171791366717322;
-	camera.position.y = 25.181160081788118;
-	camera.position.z = 31.857742628630625;
+	drawPyramid(scene1,0,0,0);
+
+	camera1.position.x =  16.001956358357106;
+	camera1.position.y = 16.425063447751537;
+	camera1.position.z = 14.28731060380158;
+
+
+	camera2.position.z = 14.28731060380158;
+
+
 }
 
 
-function drawPyramid(x, y, z){
+function drawPyramid(scene, x, y, z){
 	var depth = 19;
 	for (var Z = -4; Z <= 5; Z++){
 		var material1 = new THREE.MeshLambertMaterial( { color: randomRGB(), emissive : randomRGB() } );
@@ -95,34 +120,48 @@ function randomRGB() {
 function animate() {
    requestAnimationFrame( animate );
    controls.update();
-   renderer3D.render( scene, camera );
+   renderer3D.render( scene1, camera1 );
+   renderer3D2.render( scene2, camera2 );
 }
 
 
 function clearScene(){
-	for(var I=0;I<obj.length;I++){2
-		scene.remove(obj[I]); 
+	for(var I=0;I<obj2.length;I++){2
+		scene2.remove(obj2[I]); 
 		geometry.dispose();
 	}
-	obj = []
-	renderer3D.clear();
-	renderer3D.renderLists.dispose();
+	obj2 = []
+	renderer3D2.clear();
+	renderer3D2.renderLists.dispose();
 }
 
-function objectClickHandler(depth, material) {
-	clearScene();
+function drawSquare(depth,material1,material2){
 	h = parseInt(depth/2);
 	for (var I = -h; I <= h ; I++) { 
 		for (var J= -h; J <= h; J++){
-			var cube = new THREE.Mesh(geometry, material);
+			if ((I+J) % 2 == 0){
+				var cube = new THREE.Mesh(geometry, material1);
+			}else{
+				var cube = new THREE.Mesh(geometry, material2);
+			}
 			cube.callback = showThirukural;
-			scene.add(cube);
-			cube.position.y = 2*I;
-			cube.position.x = 2*J;
-			obj.push(cube);
+			scene2.add(cube);
+			cube.position.y = 1*I;
+			cube.position.x = 1*J;
+			obj2.push(cube);
 		}
 	}	
-    renderer3D.render(scene, camera );
+	/*
+	camera.position.x = 0.9977996480488888;
+	camera.position.y = 5.395765128893392;
+	camera.position.z = 26.454917792030614;*/
+}
+
+function objectClickHandler(depth, material1,material2) {
+	clearScene();
+	drawSquare(depth,material1,material2);
+    renderer3D.render(scene1, camera1 );
+    renderer3D2.render(scene2, camera2 );
 }
 
 function showThirukural(a,b){
@@ -156,14 +195,14 @@ function onDocumentMouseDown(event) {
 
 	mouse.x = ( ( event.clientX - renderer3D.domElement.offsetLeft ) / renderer3D.domElement.clientWidth ) * 2 - 1;
     mouse.y = - ( ( event.clientY - renderer3D.domElement.offsetTop ) / renderer3D.domElement.clientHeight ) * 2 + 1;
-    raycaster.setFromCamera(mouse, camera);
+    raycaster1.setFromCamera(mouse, camera1);
 
      
-    var intersects = raycaster.intersectObjects(obj);
+    var intersects = raycaster1.intersectObjects(obj);
 
 
     if ( intersects.length > 0 ) {
-	    intersects[0].object.callback(intersects[0].object.levelNumber,intersects[0].object.mat); 
+	    intersects[0].object.callback(intersects[0].object.levelNumber,intersects[0].object.mat1,intersects[0].object.mat2); 
    	} 
 }
 document.addEventListener('mousedown', onDocumentMouseDown, false);
