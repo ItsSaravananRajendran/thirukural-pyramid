@@ -133,6 +133,7 @@ function clearScene2(){
 	obj2 = []
 	renderer3D2.clear();
 	renderer3D2.renderLists.dispose();
+	camera2.position.z = 14.28731060380158;
 }
 
 function drawSquarePlane(depth,material1,material2){
@@ -159,7 +160,7 @@ function objectClickHandler(depth, material1,material2) {
     renderer3D2.render(scene2, camera2 );
 }
 
-function showThirukural(a,b){
+function showThirukural(){
 	clearScene2();
 	var canvas1 = document.createElement('canvas');
     var context1 = canvas1.getContext('2d');
