@@ -125,7 +125,7 @@ function animate() {
 }
 
 
-function clearScene(){
+function clearScene2(){
 	for(var I=0;I<obj2.length;I++){2
 		scene2.remove(obj2[I]); 
 		geometry.dispose();
@@ -135,7 +135,8 @@ function clearScene(){
 	renderer3D2.renderLists.dispose();
 }
 
-function drawSquare(depth,material1,material2){
+function drawSquarePlane(depth,material1,material2){
+	clearScene2();
 	h = parseInt(depth/2);
 	for (var I = -h; I <= h ; I++) { 
 		for (var J= -h; J <= h; J++){
@@ -151,21 +152,15 @@ function drawSquare(depth,material1,material2){
 			obj2.push(cube);
 		}
 	}	
-	/*
-	camera.position.x = 0.9977996480488888;
-	camera.position.y = 5.395765128893392;
-	camera.position.z = 26.454917792030614;*/
 }
 
 function objectClickHandler(depth, material1,material2) {
-	clearScene();
-	drawSquare(depth,material1,material2);
-    renderer3D.render(scene1, camera1 );
+	drawSquarePlane(depth,material1,material2);
     renderer3D2.render(scene2, camera2 );
 }
 
 function showThirukural(a,b){
-	clearScene();
+	clearScene2();
 	var canvas1 = document.createElement('canvas');
     var context1 = canvas1.getContext('2d');
     context1.font = "Bold 30px Arial";
@@ -185,8 +180,9 @@ function showThirukural(a,b){
     );
 
     mesh1.position.set(0,-10,0);
-    camera.position.z = 250
-    scene.add( mesh1 );
+    camera2.position.z = 250
+    scene2.add( mesh1 );
+    obj2.push(mesh1);
 }
 
 
@@ -203,6 +199,19 @@ function onDocumentMouseDown(event) {
 
     if ( intersects.length > 0 ) {
 	    intersects[0].object.callback(intersects[0].object.levelNumber,intersects[0].object.mat1,intersects[0].object.mat2); 
+   	} 
+
+
+	mouse.x = ( ( event.clientX - renderer3D2.domElement.offsetLeft ) / renderer3D2.domElement.clientWidth ) * 2 - 1;
+    mouse.y = - ( ( event.clientY - renderer3D2.domElement.offsetTop ) / renderer3D2.domElement.clientHeight ) * 2 + 1;
+    raycaster1.setFromCamera(mouse, camera2);
+
+     
+    var intersects = raycaster1.intersectObjects(obj2);
+
+
+    if ( intersects.length > 0 ) {
+	    intersects[0].object.callback(); 
    	} 
 }
 document.addEventListener('mousedown', onDocumentMouseDown, false);
