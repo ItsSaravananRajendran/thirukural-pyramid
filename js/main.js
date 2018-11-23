@@ -63,9 +63,9 @@ function init(){
 	geometry = new THREE.BoxBufferGeometry( 1, 1, 1 );
 	drawPyramid(scene1,0,0,0);
 
-	camera1.position.x =  16.001956358357106;
-	camera1.position.y = 16.425063447751537;
-	camera1.position.z = 14.28731060380158;
+	camera1.position.x =  0.001956358357106;
+	camera1.position.y = 2.425063447751537;
+	camera1.position.z = 25.28731060380158;
 
 
 	camera2.position.z = 14.28731060380158;
@@ -75,8 +75,8 @@ function init(){
 
 
 function drawPyramid(scene, x, y, z){
-	var depth = 19;
-	for (var Z = -4; Z <= 5; Z++){
+	var depth = 25;
+	for (var Z = -5; Z <= 7; Z++){
 		var material1 = new THREE.MeshLambertMaterial( { color: randomRGB(), emissive : randomRGB() } );
 		var material2 = new THREE.MeshLambertMaterial( { color: randomRGB(), emissive : randomRGB() } );
 		
